@@ -20,7 +20,7 @@
       <div class="container" id="app">
           <div class="row mt-5 mb-5">
               <div class="col-md-12">
-                    <h3 class="text-center">VueJs - Tabela do Mineiro</h3>                    
+                    <h1 class="text-center">VueJs - Tabela do Mineiro</h1>                    
               </div>              
           </div>
           <div class="row mt-3 mb-3">
@@ -28,7 +28,7 @@
                     <button class="btn btn-primary" @click="criarNovoJogo">Novo Jogo</button>
               </div>
           </div>
-          <div class="row mt-3 mb-3">
+          <div class="row mt-3 mb-3" v-if="visao !== 'tabela'">
                 <div class="col-12">
                     <form class="form-inline">
                             <input type="text" class="form-control col-1 mr-2" v-model="novoJogo.casa.gols">
@@ -37,17 +37,14 @@
                             <span class="mr-2 ml-2">X</span>
                             <img class="img-time ml-2" :src="novoJogo.fora.time ? novoJogo.fora.time.escudo : '' " alt="">
                             {{ novoJogo.fora.time ? novoJogo.fora.time.nome : '' }}    
-                            <input type="text" class="form-control col-1 ml-2" v-model="novoJogo.fora.gols">
+                            <input type="text" class="form-control col-1 ml-2"  v-model="novoJogo.fora.gols">
+                            <!---input type="text" :value="totalJogo">-->
                             <button type="button" class="btn btn-danger ml-4" @click="fimJogo">Fim do Jogo</button>      
                     </form>            
                 </div>
           </div>
-          <div class="row mt-3 mb-3">
-                <div class="col-12">
-                      
-                </div>
-            </div>
-          <div class="row">
+          
+          <div class="row" v-else>
                 <div class="col-12">
                     <table class="table table-striped">
                         <thead>
@@ -65,15 +62,33 @@
                                 <th scope="row">{{ indice }}</th>
                                 <td>
                                     <img class="img-time" :src="time.escudo" alt="">
-                                    {{ time.nome}}
+                                    {{ time.nome | ucwords}}
                                 </td>                            
                                 <td>{{ time.pontos }}</td>
                                 <td>{{ time.gm }}</td>
                                 <td>{{ time.gs }}</td>
-                                <td>{{ time.saldo}}</td>
+                                <td>{{ time | saldo}}</td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="col-6">
+                    <h3>Times Classificados para Libertadores</h3>
+                    <ul>
+                        <li v-for="time in timeLibertadores">
+                            <img class="img-time" :src="time.escudo" alt="">
+                            {{ time.nome}}
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-6">
+                    <h3>Times Rebaixados</h3>
+                    <ul>
+                        <li v-for="time in timeRebaixados">
+                            <img class="img-time" :src="time.escudo" alt="">
+                            {{ time.nome}}
+                        </li>
+                    </ul>
                 </div>
           </div>
       </div>
@@ -181,7 +196,21 @@
                         time: null,
                         gols: 0
                     }
-                }
+                },
+                visao: 'tabela'
+            },
+            computed:{
+                /**
+                totalJogo() {
+                    return parseInt(this.novoJogo.casa.gols) + parseInt(this.novoJogo.fora.gols)
+                },
+                */
+                timeLibertadores() {
+                    return this.times.slice(0,6);
+                },
+                timeRebaixados() {
+                    return this.times.slice(16,20);
+                },
             },
             methods:{
                 criarNovoJogo() {
@@ -194,6 +223,7 @@
                     this.novoJogo.fora.gols = 0;
 
                     console.log(this.novoJogo);
+                    this.visao = 'placar';
                 },
                 fimJogo() {
                     var golsMarcados = parseInt(this.novoJogo.casa.gols);
@@ -203,7 +233,21 @@
                     var timeCasa = this.novoJogo.casa.time;
 
                     timeCasa.fimJogo(timeAdversario, golsMarcados, golsSofridos);
+                    this.visao = 'tabela';
+                    
+                },
+                somaTotal(){
+                    this.totalJogo = parseInt(this.novoJogo.casa.gols) + parseInt(this.novoJogo.fora.gols);
                 }
+            },
+            filters: {
+                saldo(time) {
+                    var ret = time.gm - time.gs;
+                    return ret < 0 ? 0 : ret;
+                },
+                ucwords(valor) {
+                    return valor.charAt(0).toUpperCase() + valor.slice(1);
+                }             
             }
         });
     </script>
