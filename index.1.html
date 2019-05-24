@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-br">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>VueJs - Tabela do Mineiro</title>
+  </head>
+  <body>
+      <div class="container" id="app">
+          <div class="row">
+              <div class="col-md-12">
+                    <h1 class="text-center">VueJs - Tabela do Mineiro</h1>
+                    <input type="text" v-model="texto"> {{ texto }}<br /><br />
+                    <input type="text" :value="telefones">{{ telefones }}<br /><br />
+                    <input type="text" :value="digitando" @input="mostraDigitacao">{{ digitando }}<br /><br />
+                    <input type="button" class="btn btn-primary" @click="teste" value="clique aqui"><br /><br />
+                    <select @change="times">
+                        <option value="cruzeiro">cruzeiro</option>
+                        <option value="américa">américa</option>
+                    </select>
+    
+              </div>
+                
+          </div>
+      </div>
+    
+
+    
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                texto: ' aqui vai aglo',
+                telefones: '31 99889789',
+                digitando: ' veio algo'
+            },
+            methods:{
+                teste(){
+                    alert('oi')
+                },
+                times(){
+                    alert(this.texto)
+                },
+                mostraDigitacao(){
+                    console.log(this.digitando)
+                }
+            }
+        });
+    </script>
+  </body>
+</html>
