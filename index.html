@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="pt-br">
-  <head>
+
+<head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -10,96 +11,97 @@
 
     <title>VueJs - Tabela do Mineiro</title>
     <style>
-        .img-time{
+        .img-time {
             width: 30px;
             height: 30px;
         }
     </style>
-  </head>
-  <body>
-      <div class="container" id="app">
-          <div class="row mt-5 mb-5">
-              <div class="col-md-12">
-                    <h1 class="text-center">VueJs - Tabela do Mineiro</h1>                    
-              </div>              
-          </div>
-          <div class="row mt-3 mb-3">
-              <div class="col-12">
-                    <button class="btn btn-primary" @click="criarNovoJogo">Novo Jogo</button>
-              </div>
-          </div>
-          <div class="row mt-3 mb-3" v-if="visao !== 'tabela'">
-                <div class="col-12">
-                    <form class="form-inline">
-                            <input type="text" class="form-control col-1 mr-2" v-model="novoJogo.casa.gols">
-                            {{ novoJogo.casa.time ? novoJogo.casa.time.nome : '' }}
-                            <img class="img-time mr-2" :src="novoJogo.casa.time ? novoJogo.casa.time.escudo : '' " alt="">
-                            <span class="mr-2 ml-2">X</span>
-                            <img class="img-time ml-2" :src="novoJogo.fora.time ? novoJogo.fora.time.escudo : '' " alt="">
-                            {{ novoJogo.fora.time ? novoJogo.fora.time.nome : '' }}    
-                            <input type="text" class="form-control col-1 ml-2"  v-model="novoJogo.fora.gols">
-                            <!---input type="text" :value="totalJogo">-->
-                            <button type="button" class="btn btn-danger ml-4" @click="fimJogo">Fim do Jogo</button>      
-                    </form>            
-                </div>
-          </div>
-          
-          <div class="row" v-else>
-                <div class="col-12">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Nome</th>
-                                <th scope="col">Pontos</th>
-                                <th scope="col">GM</th>
-                                <th scope="col">GS</th>
-                                <th scope="col">Saldo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(time, indice) in times">
-                                <th scope="row">{{ indice }}</th>
-                                <td>
-                                    <img class="img-time" :src="time.escudo" alt="">
-                                    {{ time.nome | ucwords}}
-                                </td>                            
-                                <td>{{ time.pontos }}</td>
-                                <td>{{ time.gm }}</td>
-                                <td>{{ time.gs }}</td>
-                                <td>{{ time | saldo}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="col-6">
-                    <h3>Times Classificados para Libertadores</h3>
-                    <ul>
-                        <li v-for="time in timeLibertadores">
-                            <img class="img-time" :src="time.escudo" alt="">
-                            {{ time.nome}}
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-6">
-                    <h3>Times Rebaixados</h3>
-                    <ul>
-                        <li v-for="time in timeRebaixados">
-                            <img class="img-time" :src="time.escudo" alt="">
-                            {{ time.nome}}
-                        </li>
-                    </ul>
-                </div>
-          </div>
-      </div>
-    
+</head>
 
-    
+<body>
+    <div class="container" id="app">
+        <div class="row mt-5 mb-5">
+            <div class="col-md-12">
+                <h1 class="text-center">VueJs - Tabela do Mineiro</h1>
+            </div>
+        </div>
+        <div class="row mt-3 mb-3">
+            <div class="col-12">
+                <button class="btn btn-primary" @click="criarNovoJogo">Novo Jogo</button>
+            </div>
+        </div>
+        <div class="row mt-3 mb-3" v-if="visao !== 'tabela'">
+            <div class="col-12">
+                <form class="form-inline">
+                    <input type="text" class="form-control col-1 mr-2" v-model="novoJogo.casa.gols"> {{ novoJogo.casa.time ? novoJogo.casa.time.nome : '' }}
+                    <img class="img-time mr-2" :src="novoJogo.casa.time ? novoJogo.casa.time.escudo : '' " alt="">
+                    <span class="mr-2 ml-2">X</span>
+                    <img class="img-time ml-2" :src="novoJogo.fora.time ? novoJogo.fora.time.escudo : '' " alt=""> {{ novoJogo.fora.time ? novoJogo.fora.time.nome : '' }}
+                    <input type="text" class="form-control col-1 ml-2" v-model="novoJogo.fora.gols">
+                    <!---input type="text" :value="totalJogo">-->
+                    <button type="button" class="btn btn-danger ml-4" @click="fimJogo">Fim do Jogo</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row" v-else>
+            <div class="col-12">
+                <input type="text" class="form-control mb-3 mt-3" v-model="busca" placeholder="Digite aqui para fazer a busca">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Nome</th>
+                            <th scope="col" v-for="(coluna, indice) in ordem.colunas">
+                                <a href="#" @click.prevent="ordenar(indice)">
+                                    {{ coluna | ucwords}}
+                                </a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(time, indice) in timeFiltrados">
+                            <th scope="row">{{ indice }}</th>
+                            <td>
+                                <img class="img-time" :src="time.escudo" alt=""> {{ time.nome | ucwords}}
+                            </td>
+                            <td>{{ time.pontos }}</td>
+                            <td>{{ time.gm }}</td>
+                            <td>{{ time.gs }}</td>
+                            <td>{{ time.saldo}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-6">
+                <h3>Times Classificados para Libertadores</h3>
+                <ul>
+                    <li v-for="time in timeLibertadores">
+                        <img class="img-time" :src="time.escudo" alt=""> {{ time.nome}}
+                    </li>
+                </ul>
+            </div>
+            <div class="col-6">
+                <h3>Times Rebaixados</h3>
+                <ul>
+                    <li v-for="time in timeRebaixados">
+                        <img class="img-time" :src="time.escudo" alt=""> {{ time.nome}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+
     <!-- development version, includes helpful console warnings -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+
+
     <script>
-        class Time{
-            constructor(nome, escudo){
+        class Time {
+            constructor(nome, escudo) {
                 this.nome = nome;
                 this.escudo = escudo;
 
@@ -112,16 +114,16 @@
 
             fimJogo(timeVisitante, golsMarcados, golsSofridos) {
 
-                if( this.foiEmpate(golsMarcados, golsSofridos) ){
+                if (this.foiEmpate(golsMarcados, golsSofridos)) {
                     this.empate(golsMarcados, golsSofridos);
                     timeVisitante.empate(golsMarcados, golsSofridos);
-                    return ;
+                    return;
                 }
 
-                if( this.foiVitoria(golsMarcados, golsSofridos) ){
-                    this.vitoria(golsMarcados, golsSofridos);                    
+                if (this.foiVitoria(golsMarcados, golsSofridos)) {
+                    this.vitoria(golsMarcados, golsSofridos);
                     timeVisitante.derrota(golsSofridos, golsMarcados);
-                    
+
                 } else {
                     this.derrota(golsMarcados, golsSofridos);
                     timeVisitante.vitoria(golsMarcados, golsSofridos);
@@ -156,6 +158,7 @@
                 this.pontos += pontos;
                 this.gm += golsMarcados;
                 this.gs += golsSofridos;
+                this.saldo += this.gm - this.gs;
             }
 
         }
@@ -165,6 +168,11 @@
             el: "#app",
             data: {
                 gols: '3',
+                busca: '',
+                ordem: {
+                    colunas: ['pontos', 'gm', 'gs', 'saldo'],
+                    orientacao: ['desc', 'desc', 'asc', 'desc']
+                },
                 times: [
                     new Time('palmeiras', 'assets/palmeiras_60x60.png'),
                     new Time('Internacional', 'assets/internacional_60x60.png'),
@@ -199,23 +207,32 @@
                 },
                 visao: 'tabela'
             },
-            computed:{
+            computed: {
                 /**
                 totalJogo() {
                     return parseInt(this.novoJogo.casa.gols) + parseInt(this.novoJogo.fora.gols)
                 },
                 */
                 timeLibertadores() {
-                    return this.times.slice(0,6);
+                    return this.times.slice(0, 6);
                 },
                 timeRebaixados() {
-                    return this.times.slice(16,20);
+                    return this.times.slice(16, 20);
                 },
+                timeFiltrados() {
+                    var times = _.orderBy(this.times, this.ordem.colunas, this.ordem.orientacao);
+                    var self = this;
+
+                    return _.filter(times, function(time) {
+                        var busca = self.busca.toLowerCase();
+                        return time.nome.toLowerCase().indexOf(busca) >= 0;
+                    });
+                }
             },
-            methods:{
+            methods: {
                 criarNovoJogo() {
                     var indiceCasa = Math.floor(Math.random() * 20),
-                    indiceFora = Math.floor(Math.random() * 20);
+                        indiceFora = Math.floor(Math.random() * 20);
 
                     this.novoJogo.casa.time = this.times[indiceCasa];
                     this.novoJogo.casa.gols = 0;
@@ -234,10 +251,13 @@
 
                     timeCasa.fimJogo(timeAdversario, golsMarcados, golsSofridos);
                     this.visao = 'tabela';
-                    
+
                 },
-                somaTotal(){
+                somaTotal() {
                     this.totalJogo = parseInt(this.novoJogo.casa.gols) + parseInt(this.novoJogo.fora.gols);
+                },
+                ordenar(indice) {
+                    this.$set(this.ordem.orientacao, indice, this.ordem.orientacao[indice] == 'desc' ? 'asc' : 'desc')
                 }
             },
             filters: {
@@ -247,9 +267,10 @@
                 },
                 ucwords(valor) {
                     return valor.charAt(0).toUpperCase() + valor.slice(1);
-                }             
+                }
             }
         });
     </script>
-  </body>
+</body>
+
 </html>
