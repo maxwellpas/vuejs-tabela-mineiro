@@ -117,8 +117,10 @@ Vue.component('tabela-clubes',{
                     </tr>
                 </tbody>
             </table>
-            <time-classifidados :times="timeOrdenados"></time-classifidados>
-            <time-rebaixados :times="timeOrdenados"></time-rebaixados>
+            <div class="row">
+                <time-classifidados :times="timeOrdenados"></time-classifidados>
+                <time-rebaixados :times="timeOrdenados"></time-rebaixados>
+            </div>
         </div>      
     `,
     computed: {
@@ -148,7 +150,7 @@ Vue.component('tabela-clubes',{
 });
 
 
-Vue.component('novo-jogo', {
+Vue.component('placar', {
     props: ['timeCasa', 'timeFora'],
     data() {
         return {
@@ -163,7 +165,6 @@ Vue.component('novo-jogo', {
             <span class="mr-2 ml-2">X</span>
             <clube :time="timeFora"></clube>
             <input type="text" class="form-control col-1 ml-2" v-model="golsFora">
-            <!---input type="text" :value="totalJogo">-->
             <button type="button" class="btn btn-danger ml-4" @click="fimJogo">Fim do Jogo</button>
         </form>
     `,
@@ -179,36 +180,62 @@ Vue.component('novo-jogo', {
     }
 });
 
-new Vue({
-    el: "#app",
-    data: {
-        times: [
-            new Time('palmeiras', 'assets/palmeiras_60x60.png'),
-            new Time('Internacional', 'assets/internacional_60x60.png'),
-            new Time('Flamengo', 'assets/flamengo_60x60.png'),
-            new Time('Atlético-MG', 'assets/atletico_mg_60x60.png'),
-            new Time('Santos', 'assets/santos_60x60.png'),
-            new Time('Botafogo', 'assets/botafogo_60x60.png'),
-            new Time('Atlético-PR', 'assets/atletico-pr_60x60.png'),
-            new Time('Corinthians', 'assets/corinthians_60x60.png'),
-            new Time('Grêmio', 'assets/gremio_60x60.png'),
-            new Time('Fluminense', 'assets/fluminense_60x60.png'),
-            new Time('Bahia', 'assets/bahia_60x60.png'),
-            new Time('Chapecoense', 'assets/chapecoense_60x60.png'),
-            new Time('São Paulo', 'assets/sao_paulo_60x60.png'),
-            new Time('Cruzeiro', 'assets/cruzeiro_60x60.png'),
-            new Time('Sport', 'assets/sport_60x60.png'),
-            new Time('Ceará', 'assets/ceara_60x60.png'),
-            new Time('Vitória', 'assets/vitoria_60x60.png'),
-            new Time('Vasco', 'assets/vasco_60x60.png'),
-            new Time('América-MG', 'assets/america_mg_60x60.png'),
-            new Time('Paraná', 'assets/parana_60x60.png'),
-        ],
-        timeCasa: null,
-        timeFora: null,
-        visao: 'tabela'
+
+Vue.component('my-app', {
+    template: `
+    <div class="container">
+        <titulo></titulo>
+        
+        <div class="row mt-3 mb-3">
+            <div class="col-12">
+                <novo-jogo :times="times" @novo-jogo="showPlacar($event)"></novo-jogo>
+            </div>
+        </div>
+
+        <div class="row mt-3 mb-3" v-if="visao != 'tabela'">
+            <div class="col-12">
+                <placar :time-casa="timeCasa" :time-fora="timeFora" @fim-jogo="showTabela($event)"></placar>
+            </div>
+        </div>
+
+        <div class="row" v-else>
+            <tabela-clubes :times="times"></tabela-clubes>
+        </div>
+    </div>
+    `,
+    data() {
+        return {
+            /**
+            times: [
+                new Time('palmeiras', 'assets/palmeiras_60x60.png'),
+                new Time('Internacional', 'assets/internacional_60x60.png'),
+                new Time('Flamengo', 'assets/flamengo_60x60.png'),
+                new Time('Atlético-MG', 'assets/atletico_mg_60x60.png'),
+                new Time('Santos', 'assets/santos_60x60.png'),
+                new Time('Botafogo', 'assets/botafogo_60x60.png'),
+                new Time('Atlético-PR', 'assets/atletico-pr_60x60.png'),
+                new Time('Corinthians', 'assets/corinthians_60x60.png'),
+                new Time('Grêmio', 'assets/gremio_60x60.png'),
+                new Time('Fluminense', 'assets/fluminense_60x60.png'),
+                new Time('Bahia', 'assets/bahia_60x60.png'),
+                new Time('Chapecoense', 'assets/chapecoense_60x60.png'),
+                new Time('São Paulo', 'assets/sao_paulo_60x60.png'),
+                new Time('Cruzeiro', 'assets/cruzeiro_60x60.png'),
+                new Time('Sport', 'assets/sport_60x60.png'),
+                new Time('Ceará', 'assets/ceara_60x60.png'),
+                new Time('Vitória', 'assets/vitoria_60x60.png'),
+                new Time('Vasco', 'assets/vasco_60x60.png'),
+                new Time('América-MG', 'assets/america_mg_60x60.png'),
+                new Time('Paraná', 'assets/parana_60x60.png'),
+            ],
+             */
+            times: this.timesColecao,
+            timeCasa: null,
+            timeFora: null,
+            visao: 'tabela'
+        };
     },
-    
+    inject: ['timesColecao'],
     methods: {
         criarNovoJogo() {
             var indiceCasa = Math.floor(Math.random() * 20),
@@ -224,13 +251,20 @@ new Vue({
         showTabela(event){
             console.log(event);
             this.visao = 'tabela';
+        },
+        showPlacar({timeCasa, timeFora}) {
+            this.timeCasa = timeCasa;
+            this.timeFora = timeFora;
+            this.visao = 'placar';
         }
     },
     filters: {
+        /**
         saldo(time) {
             var ret = time.gm - time.gs;
             return ret < 0 ? 0 : ret;
         }
+         */
         /**
          * Podes ser colocado aqui ou commo um Filter global
         ,
@@ -238,5 +272,119 @@ new Vue({
             return valor.charAt(0).toUpperCase() + valor.slice(1);
         }
          */
+    }
+});
+
+Vue.component('novo-jogo', {
+    props: [],
+    data() {
+        return {
+            times: this.timesColecao,
+            timeCasa: null,
+            timeFora: null
+        }
+    },
+    inject: ['timesColecao'],
+    template: `
+    <div>
+        <button class="btn btn-primary" @click="criarNovoJogo" data-toggle="modal" data-target="#exampleModal">Novo Jogo</button>
+        <placar-modal :time-casa="timeCasa" :time-fora="timeFora"></placar-modal>
+    </div>
+    `,
+    methods: {
+        criarNovoJogo() {
+            var indiceCasa = Math.floor(Math.random() * 20),
+                indiceFora = Math.floor(Math.random() * 20);
+
+            this.timeCasa = this.times[indiceCasa];            
+            this.timeFora = this.times[indiceFora];
+            
+            /**this.$emit('novo-jogo', {timeCasa, timeFora}); */
+        }      
+    }
+});
+
+Vue.component('placar-modal', {
+    props: ['timeCasa','timeFora'],
+    data() {
+        return {
+            golsCasa: 0,
+            golsFora: 0
+        }
+    },
+    template: `
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Novo Jogo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="form-inline">
+                    <input type="text" class="form-control col-1 mr-2" v-model="golsCasa">                 
+                    <clube :time="timeCasa" invertido="true"></clube>
+                    <span class="mr-2 ml-2">X</span>
+                    <clube :time="timeFora"></clube>
+                    <input type="text" class="form-control col-1 ml-2" v-model="golsFora">                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger ml-4" data-dismiss="modal" @click="fimJogo">Fim do Jogo</button>
+            </div>
+            </div>
+        </div>
+    </div>
+    `,
+    methods: {
+        fimJogo() {
+            var golsMarcados = parseInt(this.golsCasa);
+            var golsSofridos = parseInt(this.golsFora);          
+
+            this.timeCasa.fimJogo(this.timeFora, golsMarcados, golsSofridos);
+
+        }
+    }
+});
+
+
+new Vue({
+    el: "#app",
+    provide() {/** Tudo que está dentro desse provide, está disponível ppara qualquer filho que seja inject */
+        return {
+            timesColecao: [
+                new Time('palmeiras', 'assets/palmeiras_60x60.png'),
+                new Time('Internacional', 'assets/internacional_60x60.png'),
+                new Time('Flamengo', 'assets/flamengo_60x60.png'),
+                new Time('Atlético-MG', 'assets/atletico_mg_60x60.png'),
+                new Time('Santos', 'assets/santos_60x60.png'),
+                new Time('Botafogo', 'assets/botafogo_60x60.png'),
+                new Time('Atlético-PR', 'assets/atletico-pr_60x60.png'),
+                new Time('Corinthians', 'assets/corinthians_60x60.png'),
+                new Time('Grêmio', 'assets/gremio_60x60.png'),
+                new Time('Fluminense', 'assets/fluminense_60x60.png'),
+                new Time('Bahia', 'assets/bahia_60x60.png'),
+                new Time('Chapecoense', 'assets/chapecoense_60x60.png'),
+                new Time('São Paulo', 'assets/sao_paulo_60x60.png'),
+                new Time('Cruzeiro', 'assets/cruzeiro_60x60.png'),
+                new Time('Sport', 'assets/sport_60x60.png'),
+                new Time('Ceará', 'assets/ceara_60x60.png'),
+                new Time('Vitória', 'assets/vitoria_60x60.png'),
+                new Time('Vasco', 'assets/vasco_60x60.png'),
+                new Time('América-MG', 'assets/america_mg_60x60.png'),
+                new Time('Paraná', 'assets/parana_60x60.png'),
+            ],
+            getAlgumaCoisa() {
+                console.log('algo')
+            },
+            teste: this.teste /** Para fazer que o método esteja disponível, só fazer assinatura igual a esse */
+        }
+    },
+    methods: {
+        teste() {
+
+        }
     }
 });
