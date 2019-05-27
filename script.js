@@ -118,8 +118,8 @@ Vue.component('tabela-clubes',{
                 </tbody>
             </table>
             <div class="row">
-            <time-classifidados :times="timeOrdenados"></time-classifidados>
-            <time-rebaixados :times="timeOrdenados"></time-rebaixados>
+                <time-classifidados :times="timeOrdenados"></time-classifidados>
+                <time-rebaixados :times="timeOrdenados"></time-rebaixados>
             </div>
         </div>      
     `,
@@ -165,7 +165,6 @@ Vue.component('placar', {
             <span class="mr-2 ml-2">X</span>
             <clube :time="timeFora"></clube>
             <input type="text" class="form-control col-1 ml-2" v-model="golsFora">
-            <!---input type="text" :value="totalJogo">-->
             <button type="button" class="btn btn-danger ml-4" @click="fimJogo">Fim do Jogo</button>
         </form>
     `,
@@ -297,8 +296,8 @@ Vue.component('novo-jogo', {
             var indiceCasa = Math.floor(Math.random() * 20),
                 indiceFora = Math.floor(Math.random() * 20);
 
-            this.timeCasa = this.timesColecao[indiceCasa];            
-            this.timeFora = this.timesColecao[indiceFora];
+            this.timeCasa = this.times[indiceCasa];            
+            this.timeFora = this.times[indiceFora];
             
             /**this.$emit('novo-jogo', {timeCasa, timeFora}); */
         }      
