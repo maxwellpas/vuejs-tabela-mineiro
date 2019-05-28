@@ -317,24 +317,19 @@ Vue.component('placar-modal', {
     },
     template: `
     <modal ref="modal">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Novo Jogo</h5>
-            <button type="button" class="close" @click="closeModal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <form class="form-inline">
-                <input type="text" class="form-control col-1 mr-2" v-model="golsCasa">                 
-                <clube :time="timeCasa" invertido="true"></clube>
-                <span class="mr-2 ml-2">X</span>
-                <clube :time="timeFora"></clube>
-                <input type="text" class="form-control col-1 ml-2" v-model="golsFora">                    
-            </form>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-danger ml-4" @click="fimJogo">Fim do Jogo</button>
-        </div>
+
+        <h5 slot="header-titulo">Novo Jogo</h5>     
+
+        <form class="form-inline">
+            <input type="text" class="form-control col-1 mr-2" v-model="golsCasa">                 
+            <clube :time="timeCasa" invertido="true"></clube>
+            <span class="mr-2 ml-2">X</span>
+            <clube :time="timeFora"></clube>
+            <input type="text" class="form-control col-1 ml-2" v-model="golsFora">                    
+        </form>
+        
+        <button slot="footer" type="button" class="btn btn-danger ml-4" @click="fimJogo">Fim do Jogo</button>
+        
     </modal>
     `,
     methods: {
@@ -363,7 +358,20 @@ Vue.component('modal', {
     <div class="modal fade" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <slot></slot>
+                
+                <div class="modal-header">
+                    <slot name="header-titulo" class="modal-title"></slot>
+                    
+                    <button type="button" class="close" @click="close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <slot></slot>
+                </div>
+                <div class="modal-footer">
+                    <slot name="footer"></slot>
+                </div>
             </div>
         </div>
     </div>
