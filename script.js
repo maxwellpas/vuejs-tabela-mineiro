@@ -19,7 +19,7 @@ Vue.component('titulo', {
 Vue.component('clube', {
     props: ['time', 'invertido'],
     template: `
-    <div style="display: flex; flex-direction: row">
+    <div style="display: flex; flex-direction: row" v-if="time">
         <img class="img-time ml-2 mr-2" :src="time.escudo" :style="{order: invertido == 'true' ? '2' : '1'}" alt=""> 
         <span :style="{order: invertido == 'true' ? '1' : '2'}">{{ time.nome | ucwords}}</span>
     </div>
@@ -287,8 +287,8 @@ Vue.component('novo-jogo', {
     inject: ['timesColecao'],
     template: `
     <div>
-        <button class="btn btn-primary" @click="criarNovoJogo" data-toggle="modal" data-target="#exampleModal">Novo Jogo</button>
-        <placar-modal :time-casa="timeCasa" :time-fora="timeFora"></placar-modal>
+        <button class="btn btn-primary" @click="criarNovoJogo" data-toggle="modal">Novo Jogo</button>
+        <placar-modal :time-casa="timeCasa" :time-fora="timeFora" ref="modal"></placar-modal>
     </div>
     `,
     methods: {
@@ -298,6 +298,9 @@ Vue.component('novo-jogo', {
 
             this.timeCasa = this.times[indiceCasa];            
             this.timeFora = this.times[indiceFora];
+
+            var modal = this.$refs.modal;
+            modal.showModal();
             
             /**this.$emit('novo-jogo', {timeCasa, timeFora}); */
         }      
@@ -313,30 +316,21 @@ Vue.component('placar-modal', {
         }
     },
     template: `
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Novo Jogo</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form class="form-inline">
-                    <input type="text" class="form-control col-1 mr-2" v-model="golsCasa">                 
-                    <clube :time="timeCasa" invertido="true"></clube>
-                    <span class="mr-2 ml-2">X</span>
-                    <clube :time="timeFora"></clube>
-                    <input type="text" class="form-control col-1 ml-2" v-model="golsFora">                    
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger ml-4" data-dismiss="modal" @click="fimJogo">Fim do Jogo</button>
-            </div>
-            </div>
-        </div>
-    </div>
+    <modal ref="modal">
+
+        <h5 slot="header-titulo">Novo Jogo</h5>     
+
+        <form class="form-inline">
+            <input type="text" class="form-control col-1 mr-2" v-model="golsCasa">                 
+            <clube :time="timeCasa" invertido="true"></clube>
+            <span class="mr-2 ml-2">X</span>
+            <clube :time="timeFora"></clube>
+            <input type="text" class="form-control col-1 ml-2" v-model="golsFora">                    
+        </form>
+        
+        <button slot="footer" type="button" class="btn btn-danger ml-4" @click="fimJogo">Fim do Jogo</button>
+        
+    </modal>
     `,
     methods: {
         fimJogo() {
@@ -344,7 +338,50 @@ Vue.component('placar-modal', {
             var golsSofridos = parseInt(this.golsFora);          
 
             this.timeCasa.fimJogo(this.timeFora, golsMarcados, golsSofridos);
+            this.closeModal();
+        },
+        showModal() {
+            this.getModal().show();
+        },
+        closeModal() {
+            this.getModal().close();
+        },
+        getModal() {
+            return this.$refs.modal;
+        }
+    }
 
+});
+
+Vue.component('modal', {
+    template: `
+    <div class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                
+                <div class="modal-header">
+                    <slot name="header-titulo" class="modal-title"></slot>
+                    
+                    <button type="button" class="close" @click="close" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <slot></slot>
+                </div>
+                <div class="modal-footer">
+                    <slot name="footer"></slot>
+                </div>
+            </div>
+        </div>
+    </div>
+    `,
+    methods: {
+        show() {
+            $(this.$el).modal('show');
+        },
+        close() {
+            $(this.$el).modal('hide');
         }
     }
 });
